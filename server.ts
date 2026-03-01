@@ -44,7 +44,7 @@ async function startServer() {
       fs.writeFileSync(tempPdfPath, req.file.buffer);
 
       // Call the Python script
-      const pythonProcess = spawn('python3', [
+      const pythonProcess = spawn('python', [
         path.join(__dirname, 'extractor.py'),
         tempPdfPath,
         startPage.toString(),
@@ -82,10 +82,12 @@ async function startServer() {
           fs.unlinkSync(tempPdfPath);
         }
 
-        if (code !== 0) {
-          console.error(`Python script exited with code ${code}: ${stderrData}`);
-          return res.status(500).json({ error: `Extraction failed: ${stderrData || 'Unknown error'}` });
-        }
+   if (code !== 0) {
+  console.error(`Python script exited with code ${code}: ${stderrData}`);
+  // This will show you the ACTUAL Python error in the browser
+  return res.status(500).json({ 
+    error: `Extraction failed (Code ${code}): ${stderrData || 'No error message returned. Check if pymupdf is installed.'}` 
+  });
 
         try {
           const allRows = JSON.parse(stdoutData);
