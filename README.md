@@ -2,7 +2,7 @@
 Extract tables from any PDF into CSV with live preview. This application uses a local Python script for extraction and does not use any AI services.
 
 ## The Problem
-Manual data extraction from PDFs using Python libraries such as PyMuPDF or Tabula is often a "hardcoded" nightmare. When table structures, page ranges, or column counts change, data scientists are forced to manually edit extraction scripts, leading to a slow and error-prone workflow.
+Manual data extraction from PDFs using Python libraries like pymupdf or tabula is often a "hardcoded" nightmare. When table structures, page ranges, or column counts change, data scientists are forced to manually edit extraction scripts, leading to a slow and error-prone workflow.
 
 ## Features
 - Local PDF table extraction using PyMuPDF (fitz).
