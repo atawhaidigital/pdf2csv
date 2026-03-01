@@ -27,3 +27,9 @@ Run python3 -m pip install pymupdf
    `npm install`
 2. Run the app:
    `npm run dev`
+
+   ## Important Advice 
+The app is currently deployed on Render on a free tier.
+   - **Process fewer pages:** If you are trying to extract pages 1 to 20, the server will almost certainly time out. Try doing pages 1 to 2, then 3 to 4, and so on.
+   - **First Request Delay:** Render "sleeps" your app after 15 minutes of inactivity. The very first request after it wakes up is always much slower.
+   - **File Complexity:** If the PDF has thousands of small lines or complex vector graphics, it takes a lot of CPU to find the tables.
