@@ -50,9 +50,10 @@ async function startServer() {
       let stdoutData = '';
       let stderrData = '';
 
+      // --- INCREASED TIMEOUT TO 120 SECONDS ---
       const timeout = setTimeout(() => {
         pythonProcess.kill();
-      }, 60000);
+      }, 120000);
 
       pythonProcess.stdout.on('data', (data) => stdoutData += data.toString());
       pythonProcess.stderr.on('data', (data) => stderrData += data.toString());
@@ -68,7 +69,7 @@ async function startServer() {
         if (fs.existsSync(tempPdfPath)) fs.unlinkSync(tempPdfPath);
 
         if (code === null) {
-          return res.status(500).json({ error: "Extraction timed out (60s). The PDF might be too large for the free server tier." });
+          return res.status(500).json({ error: "Extraction timed out (120s). Render's Free Tier is too slow for this specific PDF. Try processing 1-2 pages at a time." });
         }
 
         if (code !== 0) {
@@ -76,8 +77,6 @@ async function startServer() {
         }
 
         try {
-          // --- RESILIENT JSON PARSING ---
-          // Find the first '[' and last ']' to ignore any warnings/noise in stdout
           const startIdx = stdoutData.indexOf('[');
           const endIdx = stdoutData.lastIndexOf(']');
           
@@ -103,7 +102,6 @@ async function startServer() {
           
           res.json({ data: finalData });
         } catch (e: any) {
-          console.error("Parse error. Raw output:", stdoutData);
           res.status(500).json({ error: `Data Error: ${e.message}. The PDF structure might be unsupported.` });
         }
       });
