@@ -25,6 +25,8 @@ async function startServer() {
   });
 
   app.post("/api/extract", upload.single("pdf"), async (req, res) => {
+    const tempPdfPath = path.join(__dirname, `temp_${Date.now()}.pdf`);
+    
     try {
       if (!req.file) return res.status(400).json({ error: "No PDF file uploaded" });
 
@@ -33,10 +35,8 @@ async function startServer() {
       const columnCount = req.body.columnCount || "0";
       const headerNames = req.body.headerNames ? req.body.headerNames.split(',').map((h: string) => h.trim()) : [];
 
-      const tempPdfPath = path.join(__dirname, `temp_${Date.now()}.pdf`);
       fs.writeFileSync(tempPdfPath, req.file.buffer);
 
-      // Robust Python command detection
       const pythonCmd = process.platform === "win32" ? "python" : "python3";
       
       const pythonProcess = spawn(pythonCmd, [
@@ -50,7 +50,6 @@ async function startServer() {
       let stdoutData = '';
       let stderrData = '';
 
-      // Increased timeout to 60 seconds for Render Free Tier
       const timeout = setTimeout(() => {
         pythonProcess.kill();
       }, 60000);
@@ -77,7 +76,22 @@ async function startServer() {
         }
 
         try {
-          const allRows = JSON.parse(stdoutData);
+          // --- RESILIENT JSON PARSING ---
+          // Find the first '[' and last ']' to ignore any warnings/noise in stdout
+          const startIdx = stdoutData.indexOf('[');
+          const endIdx = stdoutData.lastIndexOf(']');
+          
+          if (startIdx === -1 || endIdx === -1) {
+            throw new Error("No table data found in output.");
+          }
+          
+          const jsonStr = stdoutData.substring(startIdx, endIdx + 1);
+          const allRows = JSON.parse(jsonStr);
+          
+          if (!Array.isArray(allRows) || allRows.length === 0) {
+            return res.status(500).json({ error: "No tables were found on these pages. Try a different page range." });
+          }
+
           const finalData = allRows.map((row: any[]) => {
             const obj: any = {};
             const headers = headerNames.length > 0 ? headerNames : row.map((_: any, i: number) => `Column ${i + 1}`);
@@ -86,12 +100,15 @@ async function startServer() {
             });
             return obj;
           });
+          
           res.json({ data: finalData });
-        } catch (e) {
-          res.status(500).json({ error: "Invalid data returned from extractor." });
+        } catch (e: any) {
+          console.error("Parse error. Raw output:", stdoutData);
+          res.status(500).json({ error: `Data Error: ${e.message}. The PDF structure might be unsupported.` });
         }
       });
     } catch (error: any) {
+      if (fs.existsSync(tempPdfPath)) fs.unlinkSync(tempPdfPath);
       res.status(500).json({ error: error.message });
     }
   });
