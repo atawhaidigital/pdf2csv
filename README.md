@@ -1,5 +1,5 @@
 # PDF2CSV
-Extract tables from any PDF into CSV with live preview. This application uses a local Python script for extraction and does not use any AI services.
+Extract tables from any PDF into CSV. This application uses a local Python script for extraction and does not use any AI services.
 
 ## Deployment link
 https://pdf2csv-qb1w.onrender.com/
