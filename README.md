@@ -1,6 +1,8 @@
 # PDF2CSV
 Extract tables from any PDF into CSV. This application uses a local Python script for extraction and does not use any AI services.
 
+![PDF to CSV Screenshot](https://raw.githubusercontent.com/atawhaidigital/pdf2csv/main/screenshot.png)
+
 ## Deployment link
 https://pdf2csv-qb1w.onrender.com/
 
