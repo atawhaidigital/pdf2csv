@@ -5,7 +5,7 @@ Extract tables from any PDF into CSV. This application uses a local Python scrip
 https://pdf2csv-qb1w.onrender.com/
 
 ## The Problem
-Manual data extraction from PDFs using Python libraries like pymupdf or tabula is often a "hardcoded" nightmare. When table structures, page ranges, or column counts change, data scientists are forced to manually edit extraction scripts, leading to a slow and error-prone workflow.
+Manual data extraction from PDFs using Python libraries such as PyMuPDF or Tabula is often a "hardcoded" nightmare. When table structures, page ranges, or column counts change, data scientists are forced to manually edit extraction scripts, leading to a slow and error-prone workflow.
 
 ## Features
 - Local PDF table extraction using PyMuPDF (fitz).
@@ -32,7 +32,8 @@ Run python3 -m pip install pymupdf
    `npm run dev`
 
    ## Important Advice 
-The app is currently deployed on Render on a free tier.
+The app is currently deployed on Render on a free tier. The free instance will spin down with inactivity, which can delay requests by 50 seconds or more. Please be patience the app will eventually load.
+
    - **Process fewer pages:** If you are trying to extract pages 1 to 20, the server will almost certainly time out. Try doing pages 1 to 2, then 3 to 4, and so on.
    - **First Request Delay:** Render "sleeps" your app after 15 minutes of inactivity. The very first request after it wakes up is always much slower.
    - **File Complexity:** If the PDF has thousands of small lines or complex vector graphics, it takes a lot of CPU to find the tables.
